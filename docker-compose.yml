@@ -1,0 +1,85 @@
+version: "3.7"
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    networks:
+      - app-network
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - 19500:19500
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://kafka:19500
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - app-network
+
+  kafka_ui:
+    image: provectuslabs/kafka-ui:latest
+    depends_on:
+      - kafka
+    ports:
+      - 8080:8080
+    environment:
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    networks:
+      - app-network
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  federation:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      GATEWAY_APP_PORT: 3000
+      KAFKA_BROKER_PORT: 19500
+      DEVICE_API_DATABASE_URL: postgresql://postgres:postgres@postgres:5432/device-api?connect_timeout=60
+      DEVICE_API_APP_PORT: 3001
+      DEVICE_API_APP_NAME: device-api
+      WORKER_API_DATABASE_URL: postgresql://postgres:postgres@postgres:5432/worker-api?connect_timeout=60
+      WORKER_API_APP_PORT: 3002
+      WORKER_API_APP_NAME: worker-api
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+      - "3002:3002"
+    depends_on:
+      - postgres
+      - kafka
+    networks:
+      - app-network
+
+volumes:
+  pg-data:
+
+networks:
+  app-network:
+    driver: bridge
