@@ -1,0 +1,34 @@
+{
+  "name": "federation-device-api",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "ts-node ./index.ts",
+    "migrate": "npx prisma migrate dev --name init",
+    "seed": "ts-node ./prisma/seed/index.ts"
+  },
+  "dependencies": {
+    "@nestjs/apollo": "10.1.7",
+    "@nestjs/common": "9.2.1",
+    "@nestjs/core": "9.2.1",
+    "@nestjs/graphql": "10.1.7",
+    "@nestjs/platform-express": "9.2.1",
+    "@nestjs/microservices": "9.2.1",
+    "@prisma/client": "4.13.0",
+    "@trivago/prettier-plugin-sort-imports": "3.3.0",
+    "@types/node": "18.11.18",
+    "apollo-server-express": "3.11.1",
+    "graphql": "16.6.0",
+    "kafkajs": "1.16.0",
+    "reflect-metadata": "0.1.13",
+    "prettier": "2.8.2",
+    "prisma": "4.13.0",
+    "prisma-dbml-generator": "0.10.0",
+    "rxjs": "7.8.0",
+    "ts-node": "10.9.1",
+    "type-graphql": "2.0.0-beta.1",
+    "typegraphql-nestjs": "0.5.0",
+    "typegraphql-prisma": "0.25.0",
+    "typescript": "4.9.4"
+  }
+}
