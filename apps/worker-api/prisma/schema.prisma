@@ -17,4 +17,191 @@ generator typegraphql {
 
 // ! models
 
+model Worker {
+  id       Int  @id @default(autoincrement())
+  deviceId Int?
+
+  closedAt  DateTime?
+  createdAt DateTime  @default(now())
+  startedAt DateTime?
+  updatedAt DateTime  @updatedAt
+
+  actions WorkerAction[]
+}
+
+model WorkerAction {
+  id Int @id @default(autoincrement())
+
+  type       WorkerActionType
+  createdAt  DateTime         @default(now())
+  executedAt DateTime?
+  updatedAt  DateTime         @updatedAt
+
+  asKeyboardAction WorkerKeyboardAction?
+  asMouseAction    WorkerMouseAction?
+  asWindowAction   WorkerWindowAction?
+  worker           Worker                @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  workerId         Int
+}
+
+model WorkerKeyboardAction {
+  id Int @id @default(autoincrement())
+
+  createdAt  DateTime  @default(now())
+  executedAt DateTime?
+  updatedAt  DateTime  @updatedAt
+
+  asPressKeyAction             WorkerKeyboardPressKeyAction?
+  asPressKeysCombinationAction WorkerKeyboardPressKeysCombinationAction?
+  asTypeTextAction             WorkerKeyboardTypeTextAction?
+  workerAction                 WorkerAction                              @relation(fields: [workerActionId], references: [id], onDelete: Cascade)
+  workerActionId               Int                                       @unique
+}
+
+model WorkerKeyboardPressKeyAction {
+  id Int @id @default(autoincrement())
+
+  numberOfKeyPresses Int
+  keyCode            Int
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  keyboardAction   WorkerKeyboardAction @relation(fields: [keyboardActionId], references: [id], onDelete: Cascade)
+  keyboardActionId Int                  @unique
+}
+
+model WorkerKeyboardPressKeysCombinationAction {
+  id Int @id @default(autoincrement())
+
+  keyCodes  Int[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  keyboardAction   WorkerKeyboardAction @relation(fields: [keyboardActionId], references: [id], onDelete: Cascade)
+  keyboardActionId Int                  @unique
+}
+
+model WorkerKeyboardTypeTextAction {
+  id Int @id @default(autoincrement())
+
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  keyboardAction   WorkerKeyboardAction @relation(fields: [keyboardActionId], references: [id], onDelete: Cascade)
+  keyboardActionId Int                  @unique
+}
+
+model WorkerMouseAction {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  asMouseClickAction WorkerMouseClickAction?
+  asMouseMoveAction  WorkerMouseMoveAction?
+  workerAction       WorkerAction            @relation(fields: [workerActionId], references: [id], onDelete: Cascade)
+  workerActionId     Int                     @unique
+}
+
+model WorkerMouseClickAction {
+  id Int @id @default(autoincrement())
+
+  button        WorkerMouseButton
+  coordinates   Int[]
+  isDoubleClick Boolean
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  mouseAction   WorkerMouseAction @relation(fields: [mouseActionId], references: [id], onDelete: Cascade)
+  mouseActionId Int               @unique
+}
+
+model WorkerMouseMoveAction {
+  id Int @id @default(autoincrement())
+
+  coordinates Int[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  mouseAction   WorkerMouseAction @relation(fields: [mouseActionId], references: [id], onDelete: Cascade)
+  mouseActionId Int               @unique
+}
+
+model WorkerWindowAction {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  asWindowCloseAction  WorkerWindowCloseAction?
+  asWindowMoveAction   WorkerWindowMoveAction?
+  asWindowOpenAction   WorkerWindowOpenAction?
+  asWindowResizeAction WorkerWindowResizeAction?
+  workerAction         WorkerAction              @relation(fields: [workerActionId], references: [id], onDelete: Cascade)
+  workerActionId       Int                       @unique
+}
+
+model WorkerWindowCloseAction {
+  id Int @id @default(autoincrement())
+
+  pid       Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  windowAction   WorkerWindowAction @relation(fields: [windowActionId], references: [id], onDelete: Cascade)
+  windowActionId Int                @unique
+}
+
+model WorkerWindowMoveAction {
+  id Int @id @default(autoincrement())
+
+  newCoordinates Int[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  windowAction   WorkerWindowAction @relation(fields: [windowActionId], references: [id], onDelete: Cascade)
+  windowActionId Int                @unique
+}
+
+model WorkerWindowOpenAction {
+  id Int @id @default(autoincrement())
+
+  launcherExePath String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  windowAction   WorkerWindowAction @relation(fields: [windowActionId], references: [id], onDelete: Cascade)
+  windowActionId Int                @unique
+}
+
+model WorkerWindowResizeAction {
+  id Int @id @default(autoincrement())
+
+  newSize   Int[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  windowAction   WorkerWindowAction @relation(fields: [windowActionId], references: [id], onDelete: Cascade)
+  windowActionId Int                @unique
+}
+
 // ! enums
+
+enum WorkerActionType {
+  KEYBOARD_PRESS_KEY
+  KEYBOARD_PRESS_KEYS_COMBINATION
+  KEYBOARD_TYPE_TEXT
+  MOUSE_CLICK
+  MOUSE_MOVE
+  WINDOW_CLOSE
+  WINDOW_MOVE
+  WINDOW_OPEN
+  WINDOW_RESIZE
+}
+
+enum WorkerMouseButton {
+  LEFT
+  MIDDLE
+  RIGHT
+}

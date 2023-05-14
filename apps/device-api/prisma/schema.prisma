@@ -17,4 +17,29 @@ generator typegraphql {
 
 // ! models
 
+model Device {
+  id         Int   @id @default(autoincrement())
+  workersIds Int[]
+
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  specification DeviceSpecification?
+}
+
+model DeviceSpecification {
+  id Int @id @default(autoincrement())
+
+  clockSpeedOfCPU  Float
+  gigabytesOfRam   Int
+  gigabytesOfVRam  Int
+  numberOfCPUCores Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  device   Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  deviceId Int    @unique
+}
+
 // ! enums
