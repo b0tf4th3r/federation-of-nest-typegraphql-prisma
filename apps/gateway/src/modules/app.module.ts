@@ -14,8 +14,8 @@ import 'reflect-metadata'
       gateway: {
         supergraphSdl: new IntrospectAndCompose({
           subgraphs: [
-            { name: process.env.DEVICE_API_APP_NAME, url: `http://localhost:${process.env.DEVICE_API_APP_PORT}/graphql` },
-            { name: process.env.WORKER_API_APP_NAME, url: `http://localhost:${process.env.WORKER_API_APP_PORT}/graphql` },
+            { name: process.env.DEVICE_API_APP_NAME || "", url: `http://localhost:${process.env.DEVICE_API_APP_PORT}/graphql` },
+            { name: process.env.WORKER_API_APP_NAME || "", url: `http://localhost:${process.env.WORKER_API_APP_PORT}/graphql` },
           ],
         }),
       },
