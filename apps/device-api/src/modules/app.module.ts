@@ -5,6 +5,7 @@ import { TypeGraphQLModule } from 'typegraphql-nestjs'
 
 import { prisma } from '../libs/prisma'
 import { ApiModule } from './api/api.module'
+import { ExternalEventsModule } from './external-events/external-events.module'
 
 export interface Context {
   prisma: PrismaClient
@@ -20,7 +21,8 @@ export interface Context {
       skipCheck: true,
       context: (): Context => ({ prisma }),
     }),
-    ApiModule
+    ApiModule,
+    ExternalEventsModule
   ],
   providers: [],
 })
