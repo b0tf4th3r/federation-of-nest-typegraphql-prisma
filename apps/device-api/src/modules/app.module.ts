@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client'
 import { TypeGraphQLModule } from 'typegraphql-nestjs'
 
 import { prisma } from '../libs/prisma'
+import { ApiModule } from './api/api.module'
 
 export interface Context {
   prisma: PrismaClient
@@ -19,6 +20,7 @@ export interface Context {
       skipCheck: true,
       context: (): Context => ({ prisma }),
     }),
+    ApiModule
   ],
   providers: [],
 })
